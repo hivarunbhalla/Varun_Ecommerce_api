@@ -1,0 +1,3 @@
+tags and store app are independent modules
+
+So to decouple them we use another app : store_custom which interacts with both and acts as bridge between multiple apps related to store
