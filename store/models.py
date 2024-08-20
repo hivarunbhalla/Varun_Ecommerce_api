@@ -1,5 +1,5 @@
 from decimal import Decimal
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.text import slugify
 
@@ -140,6 +140,13 @@ class CartItem(models.Model):
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.IntegerField(
+        default=5.0,
+        validators = [
+            MinValueValidator(Decimal(1.0)),
+            MaxValueValidator(Decimal(5.0)),
+        ]     
+        )
     title = models.CharField(max_length=255)
     description = models.TextField()
     date = models.DateField(auto_now_add=True)
