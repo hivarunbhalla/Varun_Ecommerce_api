@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.text import slugify
@@ -48,10 +49,10 @@ class Product(models.Model):
     sku = models.CharField(max_length=20)
     slug = models.SlugField(unique=True)
 
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2, validators=[MinValueValidator(1)])
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2, validators=[MinValueValidator(Decimal(1.0))])
 
     #don't delete product if collection got deleted
-    collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT, related_name='products', null=True, blank=True)
     promotions = models.ManyToManyField("Promotion", blank=True)
 
     inventory = models.IntegerField(validators=[MinValueValidator(0)])
@@ -137,3 +138,13 @@ class CartItem(models.Model):
     quantity = models.PositiveSmallIntegerField()
 
 
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    date = models.DateField(auto_now_add=True)
+    
+    
+    def __str__(self):
+        return f'Review for {self.product.title}: {self.title}'
+    

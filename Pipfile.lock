@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "467d87e8599543c11f6aa03e878e2f42e4f184611c1bab8f6ed0f4f9d93590df"
+            "sha256": "75b0b99d1dbdab8f4ddab3d302a7174dc0fc7e493f3dc9013238a54705ea2928"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_full_version": "3.11.4",
+            "python_full_version": "3.11.*",
             "python_version": "3.11"
         },
         "sources": [
@@ -42,6 +42,15 @@
             "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==3.15.2"
+        },
+        "drf-nested-routers": {
+            "hashes": [
+                "sha256:2b846385ed95c9f17bf4242db3b264ac826b5af00dda6c737d3fe7cc7bf2c7db",
+                "sha256:3a8ec45a025c0f39188ec1ec415244beb875a6f4db87911a1f5a606d09b68c9f"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.8'",
+            "version": "==0.94.1"
         },
         "sqlparse": {
             "hashes": [
