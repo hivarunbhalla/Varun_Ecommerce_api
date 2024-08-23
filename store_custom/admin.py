@@ -12,6 +12,7 @@ class TagInline(GenericTabularInline):
 
 class CustomProductAdmin(ProductAdmin):
     inlines = (TagInline,)
+    list_filter = ('unit_price', 'last_update')
 
 
 admin.site.unregister(Product)  #removing old model from admin site

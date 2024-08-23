@@ -57,6 +57,7 @@ class Product(models.Model):
 
     inventory = models.IntegerField(validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    
     last_update = models.DateTimeField(auto_now=True, editable=False)
 
     def __str__(self) -> str:

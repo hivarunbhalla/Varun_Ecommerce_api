@@ -2,10 +2,12 @@
 from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from .models import Collection, Product, OrderItem, Review
 from .filters import ProductFilter, ReviewFilter
+from .pagination import DefaultPagination
 from .serializers import CollectionSerializer, ProductSerializer, ReviewSerializer
 
 
@@ -17,8 +19,12 @@ class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
+    search_fields = ['title', 'description',]
+    ordering_fields = ['title', 'unit_price', 'inventory', 'last_update']
+    
+    pagination_class = DefaultPagination
     
     # Filters logic without django-filter
     # def get_queryset(self):
@@ -85,6 +91,12 @@ class CollectionViewSet(ModelViewSet):
     queryset = Collection.objects.all()
     serializer_class = CollectionSerializer
     
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['title', 'description', 'featured_product__title']
+    ordering_fields = ['title', ]
+    
+    pagination_class = DefaultPagination
+    
     def get_serializer_context(self):
         return {
             'request' : self.request
@@ -124,8 +136,12 @@ def collection_detail(request, pk):
 class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
     
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ReviewFilter
+    search_fields = ['title', 'description']
+    ordering_fields = ['rating', ]
+    
+    pagination_class = DefaultPagination
     
     def get_serializer_context(self):
         return {
