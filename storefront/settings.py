@@ -44,8 +44,8 @@ INSTALLED_APPS = [
 
     #Custom Apps
     'store',
-    'store_custom',
     'tags',
+    'core',
 ]
 
 REST_FRAMEWORK = {
@@ -136,5 +136,4 @@ STATIC_DIRS = [BASE_DIR / 'templates']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
+AUTH_USER_MODEL = 'core.User'
