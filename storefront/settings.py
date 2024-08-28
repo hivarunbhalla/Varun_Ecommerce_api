@@ -137,3 +137,4 @@ STATIC_DIRS = [BASE_DIR / 'templates']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
+    
