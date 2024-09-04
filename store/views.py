@@ -1,16 +1,20 @@
 
-from urllib import request
+import re
 from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissions
 from rest_framework.response import Response
-from .models import Cart, CartItem, Collection, Product, OrderItem, Review
+
+from store.permissions import IsAdminOrReadOnly, FullDjangoModelPermissions, ViewCustomerHistoryPermission
+from .models import Cart, CartItem, Collection, Customer, Product, OrderItem, Review
 from .filters import ProductFilter, ReviewFilter
 from .pagination import DefaultPagination
-from .serializers import AddCartItemSerializer, CartSerializer, CartItemSerializer, CollectionSerializer, ProductSerializer, UpdateCartItemSerializer, ReviewSerializer
+from .serializers import AddCartItemSerializer, CartSerializer, CartItemSerializer, CollectionSerializer, CustomerSerializer, ProductSerializer, UpdateCartItemSerializer, ReviewSerializer
 
 
 
@@ -27,6 +31,7 @@ class ProductViewSet(ModelViewSet):
     ordering_fields = ['title', 'unit_price', 'inventory', 'last_update']
     
     pagination_class = DefaultPagination
+    permission_classes = [IsAdminOrReadOnly]
     
     # Filters logic without django-filter
     # def get_queryset(self):
@@ -98,6 +103,8 @@ class CollectionViewSet(ModelViewSet):
     ordering_fields = ['title', ]
     
     pagination_class = DefaultPagination
+    permission_classes = [IsAdminOrReadOnly]
+    
     
     def get_serializer_context(self):
         return {
@@ -144,6 +151,8 @@ class ReviewViewSet(ModelViewSet):
     ordering_fields = ['rating', ]
     
     pagination_class = DefaultPagination
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    
     
     def get_serializer_context(self):
         return {
@@ -181,3 +190,30 @@ class CartItemViewSet(ModelViewSet):
         return CartItem.objects.filter(cart_id = self.kwargs['cart_pk'])
         
             
+class CustomerViewSet(ModelViewSet):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+    
+    permission_classes = [FullDjangoModelPermissions]
+    
+    @action(detail=True, permission_classes = [ViewCustomerHistoryPermission])
+    def history(self, request, pk):
+        return Response('ok')
+    
+    @action(detail=False, methods=['GET', 'PUT'], permission_classes = [IsAuthenticated])
+    def me(self, request):
+        user_id = request.user.id
+        if not user_id:
+            return Response({'error': 'User ID is required (Add Access Token)'}, status=status.HTTP_400_BAD_REQUEST)
+    
+        (customer,created) = Customer.objects.get_or_create(user_id=user_id)
+        
+        if request.method == 'GET':
+            serializer = CustomerSerializer(customer)
+            return Response(serializer.data)
+        
+        elif request.method == 'PUT':
+            serializer = CustomerSerializer(customer, data=request.data)
+            serializer.is_valid(raise_exception = True)
+            serializer.save()
+            return Response(serializer.data)

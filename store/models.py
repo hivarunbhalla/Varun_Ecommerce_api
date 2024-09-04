@@ -6,6 +6,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.text import slugify
 
+from store import permissions
+
 class Promotion(models.Model):
     DISCOUNT_TYPE_CHOICES = [
         ('PERCENTAGE', 'Percentage'),
@@ -102,6 +104,9 @@ class Customer(models.Model):
     
     class Meta:
         ordering = ['user__first_name', 'user__last_name']
+        permissions = [
+            ('view_history', 'Can View History')
+        ]
 
 
 class Order(models.Model):
