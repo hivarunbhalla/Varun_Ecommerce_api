@@ -204,7 +204,7 @@ class CustomerViewSet(ModelViewSet):
         if not user_id:
             return Response({'error': 'User ID is required (Add Access Token)'}, status=status.HTTP_400_BAD_REQUEST)
     
-        (customer,created) = Customer.objects.get_or_create(user_id=user_id)
+        customer = Customer.objects.get(user_id=user_id)
         
         if request.method == 'GET':
             serializer = CustomerSerializer(customer)
