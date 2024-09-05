@@ -1,3 +1,14 @@
 tags and store app are independent modules
 
 So to decouple them we use another app : core which interacts with both and acts as bridge between multiple apps related to store
+
+
+USER LOGIC:
+    their are 2 types of USER:
+    1) User Specific to app : (PROFILE) ( I case od store the user is 'Customer')
+    2) User For django default auth (which is in case inside thw 'core' app which isspecific to project)
+
+    When user register, system will generate user_id (using core auth module) which include necesary details like (username, password) {i.e data only required for login}
+    Other data like DOB, name,etc that is not necessary for user registration or login will be associated with user profile (CUSTOMER for store app)
+
+    This User profile of CUSTOMER of store will contain a ForeignKey to the USER_ID of default Auth app (In this Case 'Core.Auth' {check for 'AUTH_USER_MODEL' in settings.py )
