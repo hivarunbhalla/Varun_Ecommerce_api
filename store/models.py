@@ -5,8 +5,8 @@ from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.text import slugify
-
 from store import permissions
+from .validators import validate_file_size
 
 class Promotion(models.Model):
     DISCOUNT_TYPE_CHOICES = [
@@ -73,6 +73,11 @@ class Product(models.Model):
         if not self.slug:  # Only set the slug if it hasn't been set yet
             self.slug = slugify(self.title)  # Generate the slug from the title
         super().save(*args, **kwargs)  # Call the original save method
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey("Product", on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='store/images', validators=[validate_file_size]) #path related to media root
 
 
 class Customer(models.Model):

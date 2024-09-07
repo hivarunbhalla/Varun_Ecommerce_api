@@ -10,10 +10,10 @@ from rest_framework.response import Response
 
 from core import serializers
 from store.permissions import IsAdminOrReadOnly, FullDjangoModelPermissions, ViewCustomerHistoryPermission
-from .models import Cart, CartItem, Collection, Customer, Order, Product, OrderItem, Review
+from .models import Cart, CartItem, Collection, Customer, Order, Product, OrderItem, ProductImage, Review
 from .filters import ProductFilter, ReviewFilter
 from .pagination import DefaultPagination
-from .serializers import AddCartItemSerializer, CartSerializer, CartItemSerializer, CollectionSerializer, CreateOrderSerializer, CustomerSerializer, OrderItemSerializer, OrderSerializer, ProductSerializer, UpdateCartItemSerializer, ReviewSerializer, UpdateOrderSerializer
+from .serializers import AddCartItemSerializer, CartSerializer, CartItemSerializer, CollectionSerializer, CreateOrderSerializer, CustomerSerializer, OrderItemSerializer, OrderSerializer, ProductImageSerializer, ProductSerializer, UpdateCartItemSerializer, ReviewSerializer, UpdateOrderSerializer
 
 
 
@@ -21,7 +21,7 @@ def home(request):
     return HttpResponse("Welcome to Store Homepage")
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.prefetch_related('images').all()
     serializer_class = ProductSerializer
     
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -270,5 +270,16 @@ class OrderItemViewSet(ModelViewSet):
         return OrderItem.objects.filter(order_id = self.kwargs['order_pk'])
 
 
-
+class ProductImageViewSet(ModelViewSet):
+    serializer_class = ProductImageSerializer
+    
+    def get_queryset(self):
+        return ProductImage.objects.filter(product_id = self.kwargs['product_pk'])
+    
+    def get_serializer_context(self):
+        return {
+            'product_pk' : self.kwargs['product_pk']
+        }
+    
+    
     

@@ -1,6 +1,6 @@
 from django.db import transaction
 from rest_framework import serializers
-from .models import Cart, CartItem, Customer, Order, OrderItem, Product, Collection, Review
+from .models import Cart, CartItem, Customer, Order, OrderItem, Product, Collection, ProductImage, Review
 from .signals import order_created
 
 
@@ -15,23 +15,36 @@ class CollectionSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
     
 
-
+class ProductImageSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = ProductImage
+        fields = [ 'id' , 'image']
+        
+    def create(self, validated_data):
+        product_id = self.context['product_pk']
+        return ProductImage.objects.create(product_id = product_id, **validated_data)
+        
+        
 class ProductSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many = True, read_only = True)
+    
     class Meta:
         model = Product
-        fields = ['id', 'title', 'description', 'slug', 'inventory', 'unit_price', 'collection']
+        fields = ['id', 'title', 'description', 'slug', 'inventory', 'unit_price', 'collection', 'images']
 
     # collection = serializers.HyperlinkedRelatedField(
     #     queryset=models.Collection.objects.all(),
     #     view_name='collection-detail',
     # )
+ 
     
 class SimpleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'title', 'sku', 'unit_price']
         
-    
+
 class ReviewSerializer(serializers.ModelSerializer):
     product = SimpleProductSerializer(read_only = True) 
     id = serializers.IntegerField(read_only = True)
