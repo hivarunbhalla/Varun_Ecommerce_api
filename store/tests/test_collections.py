@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from rest_framework import status
 import pytest
 from model_bakery import baker
@@ -10,7 +9,6 @@ def create_collection(api_client):
     def do_create_collection(collection): # extra fn to take collection as input
         return api_client.post(path = '/store/collections/', data = collection,  format='json')
     return do_create_collection
-
 
 @pytest.mark.django_db
 class TestCreateCollection:
@@ -61,6 +59,8 @@ class TestCreateCollection:
         assert response.data['id'] > 0   # as id will be returened
     
  
+ 
+ 
 @pytest.fixture
 def retrieve_collection(api_client):
     def do_retrieve_collection(collection_id):
@@ -69,8 +69,8 @@ def retrieve_collection(api_client):
 
 @pytest.mark.django_db
 class TestRetreiveCollection:
+    
     def test_if_collection_exists_return_200(self, retrieve_collection):
-        
         collection = baker.make(Collection)
         response = retrieve_collection(collection.id)
         
@@ -82,5 +82,54 @@ class TestRetreiveCollection:
             'description' : collection.description,
             'featured_product' : collection.featured_product
         }
+   
+ 
+ 
+ 
+@pytest.fixture
+def update_collection(api_client):
+    def do_update_collection(collection_id, data): # extra fn to take collection as input
+        return api_client.patch(path = f'/store/collections/{collection_id}/', data = data,  format='json')
+    return do_update_collection
+    
+@pytest.mark.django_db       
+class TestUpdateCollection:
+    
+    def test_update_collection_success_returns_200(self, authenticate, update_collection):
+        authenticate(is_staff=True)
         
-           
+        collection = baker.make(Collection)
+        new_title = 'Updated Title'
+        new_description = 'Updated Description'
+        response = update_collection(
+            collection.id,
+            {'title' : new_title, 'description' : new_description}
+        )
+        
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {
+            'id' : collection.id,
+            'title' : new_title,
+            'description' : new_description,
+            'featured_product' : collection.featured_product
+        }
+   
+ 
+ 
+ 
+@pytest.fixture
+def delete_collection(api_client):
+    def do_delete_collection(collection_id): # extra fn to take collection as input
+        return api_client.delete(path = f'/store/collections/{collection_id}/')
+    return do_delete_collection
+
+@pytest.mark.django_db       
+class TestDeleteCollection:
+    def test_delete_collection_returns_204(self, api_client, authenticate):
+        authenticate(is_staff=True)
+        
+        collection = baker.make(Collection)
+        response = api_client.delete(f'/store/collections/{collection.id}/')
+        
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        
