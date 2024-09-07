@@ -1,6 +1,4 @@
 {
     "python.analysis.autoImportCompletions": true,
-    "python.analysis.typeCheckingMode": "off",
-    "IDX.aI.enableInlineCompletion": false,
-    "IDX.aI.enableCodebaseIndexing": false
+    "python.analysis.typeCheckingMode": "off"
 }
