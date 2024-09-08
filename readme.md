@@ -3,7 +3,7 @@
 ## Overview
 This Django project showcases advanced use of Django REST Framework (DRF) with implementations for RESTful APIs, file uploads, email handling, automated testing, and JWT-based authentication. The project includes functionalities for shopping cart management, user authentication, image uploads, and more.
 
-DEMO: <iframe width="560" height="315" src="https://www.youtube.com/embed/mOJflvE2SKc?si=HMnsWQ0Roz_wwSSf" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+DEMO: https://youtu.be/mOJflvE2SKc?si=fKGFunyEadA4gxmM
 
 ## Features
 - **RESTful APIs**: Efficient API creation and management.
